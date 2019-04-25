@@ -16,5 +16,6 @@ require (
 	github.com/spf13/viper v1.3.1
 	github.com/stretchr/testify v1.3.0
 	github.com/tomasen/fcgi_client v0.0.0-20180423082037-2bb3d819fd19
+	golang.org/x/sys v0.0.0-20190425145619-16072639606e // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6 // indirect
 )

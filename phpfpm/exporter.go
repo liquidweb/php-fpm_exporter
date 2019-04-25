@@ -178,6 +178,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	e.PoolManager.Update()
 
 	for _, pool := range e.PoolManager.Pools {
+		log.Debugf("Reporting for %s: %v+", pool.Name, pool)
 		ch <- prometheus.MustNewConstMetric(e.scrapeFailues, prometheus.CounterValue, float64(pool.ScrapeFailures), pool.Name)
 
 		if pool.ScrapeError != nil {

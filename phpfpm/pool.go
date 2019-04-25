@@ -127,7 +127,7 @@ func (p *Pool) Update() (err error) {
 	log.Debugf("Pool[%v]: %v", p.Address, string(content))
 
 	if err = json.Unmarshal(content, &p); err != nil {
-		log.Errorf("Pool[%v]: %v", p.Address, string(content))
+		log.Errorf("Couldn't unmarshall into Pool[%v]: %v (%v)", p.Address, err, string(content))
 		return p.error(err)
 	}
 

@@ -26,21 +26,21 @@ import (
 
 // PoolManager manages all configured Pools
 type PoolManager struct {
-	Pools map[string]Pool `json:"pools"`
+	Pools map[string]*Pool `json:"pools"`
 	mutex sync.RWMutex
 }
 
 // Add will add a pool to the pool manager based on the given URI.
-func (pm *PoolManager) Add(uri string) Pool {
+func (pm *PoolManager) Add(uri string) *Pool {
 	pm.mutex.Lock()
 	defer pm.mutex.Unlock()
 
 	if pm.Pools == nil {
-		pm.Pools = make(map[string]Pool)
+		pm.Pools = make(map[string]*Pool)
 	}
 
-	p := Pool{Address: uri}
-	log.Infof("uri: %s, p: %v+", uri, p)
+	p := &Pool{Address: uri}
+	log.Infof("Adding pool %v", uri)
 	pm.Pools[uri] = p
 	return p
 }
@@ -49,6 +49,7 @@ func (pm *PoolManager) Remove(uri string) {
 	pm.mutex.Lock()
 	defer pm.mutex.Unlock()
 
+	log.Infof("Removing pool: %v", uri)
 	delete(pm.Pools, uri)
 }
 
@@ -72,6 +73,7 @@ func (pm *PoolManager) WatchDir(ctx context.Context, dir string) {
 				if !ok {
 					return
 				}
+				log.Debugf("FS event: %v#", event)
 				filename, err := filepath.Abs(event.Name)
 				if err != nil {
 					log.Errorf("Could not convert %v to an absolute path: %v", event.Name, err)
@@ -79,10 +81,8 @@ func (pm *PoolManager) WatchDir(ctx context.Context, dir string) {
 				}
 				uri := "unix://" + filename + ";/status"
 				if event.Op&fsnotify.Create == fsnotify.Create {
-					log.Infof("Adding pool: %v", uri)
 					pm.Add(uri)
 				} else if event.Op&fsnotify.Remove == fsnotify.Remove {
-					log.Infof("Removing pool: %v", uri)
 					pm.Remove(uri)
 				}
 			case err, ok := <-watcher.Errors:
@@ -106,7 +106,7 @@ func (pm *PoolManager) Update() (err error) {
 
 	for _, pool := range pm.Pools {
 		wg.Add(1)
-		go func(p Pool) {
+		go func(p *Pool) {
 			defer wg.Done()
 			p.Update()
 		}(pool)
