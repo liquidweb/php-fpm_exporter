@@ -16,6 +16,7 @@ package phpfpm
 
 import (
 	"context"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -71,7 +72,12 @@ func (pm *PoolManager) WatchDir(ctx context.Context, dir string) {
 				if !ok {
 					return
 				}
-				uri := "unix://" + dir + event.Name + ";/status"
+				filename, err := filepath.Abs(event.Name)
+				if err != nil {
+					log.Errorf("Could not convert %v to an absolute path: %v", event.Name, err)
+					return
+				}
+				uri := "unix://" + filename + ";/status"
 				if event.Op&fsnotify.Create == fsnotify.Create {
 					log.Infof("Adding pool: %v", uri)
 					pm.Add(uri)
