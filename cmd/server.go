@@ -20,9 +20,10 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/hipages/php-fpm_exporter/phpfpm"
+	"github.com/liquidweb/php-fpm_exporter/phpfpm"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -32,6 +33,7 @@ var (
 	metricsEndpoint  string
 	scrapeURIs       []string
 	fixProcessCount  bool
+	watchDir         string
 )
 
 // serverCmd represents the server command
@@ -47,10 +49,16 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Infof("Starting server on %v with path %v", listeningAddress, metricsEndpoint)
 
-		pm := phpfpm.PoolManager{}
+		pm := &phpfpm.PoolManager{}
 
 		for _, uri := range scrapeURIs {
 			pm.Add(uri)
+		}
+
+		ctx, cancel := context.WithCancel(context.Background())
+
+		if watchDir != "" {
+			pm.WatchDir(ctx, watchDir)
 		}
 
 		exporter := phpfpm.NewExporter(pm)
@@ -95,14 +103,15 @@ to quickly create a Cobra application.`,
 
 		// Block until we receive our signal.
 		<-c
+		defer cancel()
 
 		// Create a deadline to wait for.
-		var wait time.Duration
-		ctx, cancel := context.WithTimeout(context.Background(), wait)
-		defer cancel()
+		finishctx, finishcancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer finishcancel()
+
 		// Doesn't block if no connections, but will otherwise wait
 		// until the timeout deadline.
-		if err := srv.Shutdown(ctx); err != nil {
+		if err := srv.Shutdown(finishctx); err != nil {
 			log.Fatal("Error during shutdown", err)
 		}
 		// Optionally, you could run srv.Shutdown in a goroutine and block on
@@ -116,9 +125,10 @@ to quickly create a Cobra application.`,
 func init() {
 	RootCmd.AddCommand(serverCmd)
 
+	serverCmd.Flags().StringVar(&watchDir, "phpfpm.watch-dir", "", "A directory to watch.  As unix sockets are added/removed, the list of scaped sockets will be updated to match")
 	serverCmd.Flags().StringVar(&listeningAddress, "web.listen-address", ":9253", "Address on which to expose metrics and web interface.")
 	serverCmd.Flags().StringVar(&metricsEndpoint, "web.telemetry-path", "/metrics", "Path under which to expose metrics.")
-	serverCmd.Flags().StringSliceVar(&scrapeURIs, "phpfpm.scrape-uri", []string{"tcp://127.0.0.1:9000/status"}, "FastCGI address, e.g. unix:///tmp/php.sock;/status or tcp://127.0.0.1:9000/status")
+	serverCmd.Flags().StringSliceVar(&scrapeURIs, "phpfpm.scrape-uri", []string{}, "FastCGI address, e.g. unix:///tmp/php.sock;/status or tcp://127.0.0.1:9000/status")
 	serverCmd.Flags().BoolVar(&fixProcessCount, "phpfpm.fix-process-count", false, "Enable to calculate process numbers via php-fpm_exporter since PHP-FPM sporadically reports wrong active/idle/total process numbers.")
 
 	//viper.BindEnv("web.listen-address", "PHP_FPM_WEB_LISTEN_ADDRESS")

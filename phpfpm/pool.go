@@ -1,17 +1,3 @@
-// Copyright © 2018 Enrico Stahn <enrico.stahn@gmail.com>
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-// Package phpfpm provides convenient access to PHP-FPM pool data
 package phpfpm
 
 import (
@@ -22,9 +8,9 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	fcgiclient "github.com/tomasen/fcgi_client"
 )
 
@@ -45,22 +31,6 @@ const PoolProcessRequestInfo string = "Getting request informations"
 
 // PoolProcessRequestEnding defines a process that is about to end.
 const PoolProcessRequestEnding string = "Ending"
-
-var log logger
-
-type logger interface {
-	Info(ar ...interface{})
-	Infof(string, ...interface{})
-	Debug(ar ...interface{})
-	Debugf(string, ...interface{})
-	Error(ar ...interface{})
-	Errorf(string, ...interface{})
-}
-
-// PoolManager manages all configured Pools
-type PoolManager struct {
-	Pools []Pool `json:"pools"`
-}
 
 // Pool describes a single PHP-FPM pool that can be reached via a Socket or TCP address
 type Pool struct {
@@ -114,35 +84,7 @@ type PoolProcessStateCounter struct {
 	Ending         int64
 }
 
-// Add will add a pool to the pool manager based on the given URI.
-func (pm *PoolManager) Add(uri string) Pool {
-	p := Pool{Address: uri}
-	pm.Pools = append(pm.Pools, p)
-	return p
-}
-
-// Update will run the pool.Update() method concurrently on all Pools.
-func (pm *PoolManager) Update() (err error) {
-	wg := &sync.WaitGroup{}
-
-	started := time.Now()
-
-	for idx := range pm.Pools {
-		wg.Add(1)
-		go func(p *Pool) {
-			defer wg.Done()
-			p.Update()
-		}(&pm.Pools[idx])
-	}
-
-	wg.Wait()
-
-	ended := time.Now()
-
-	log.Debugf("Updated %v pool(s) in %v", len(pm.Pools), ended.Sub(started))
-
-	return nil
-}
+type timestamp time.Time
 
 // Update will connect to PHP-FPM and retrieve the latest data for the pool.
 func (p *Pool) Update() (err error) {
@@ -262,8 +204,6 @@ func parseURL(rawurl string) (scheme string, address string, path string, err er
 	return
 }
 
-type timestamp time.Time
-
 // MarshalJSON customise JSON for timestamp
 func (t *timestamp) MarshalJSON() ([]byte, error) {
 	ts := time.Time(*t).Unix()
@@ -298,9 +238,4 @@ func (rd *requestDuration) UnmarshalJSON(b []byte) error {
 		*rd = requestDuration(rdc)
 	}
 	return nil
-}
-
-// SetLogger configures the used logger
-func SetLogger(logger logger) {
-	log = logger
 }

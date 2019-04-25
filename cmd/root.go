@@ -18,14 +18,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hipages/php-fpm_exporter/phpfpm"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
-
-var log = logrus.New()
 
 // Version that is being reported by the CLI
 var Version string
@@ -86,8 +84,6 @@ func initConfig() {
 
 // initLogger configures the log level
 func initLogger() {
-	phpfpm.SetLogger(log)
-
 	if value := os.Getenv("PHP_FPM_LOG_LEVEL"); value != "" {
 		logLevel = value
 	}

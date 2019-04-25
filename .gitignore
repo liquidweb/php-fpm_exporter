@@ -18,3 +18,4 @@ vendor/
 
 # goreleaser
 dist/
+php-fpm_exporter

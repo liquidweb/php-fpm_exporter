@@ -20,7 +20,8 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gosuri/uitable"
-	"github.com/hipages/php-fpm_exporter/phpfpm"
+	"github.com/liquidweb/php-fpm_exporter/phpfpm"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 

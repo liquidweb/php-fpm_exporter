@@ -18,6 +18,7 @@ import (
 	"sync"
 
 	"github.com/prometheus/client_golang/prometheus"
+	log "github.com/sirupsen/logrus"
 	hashids "github.com/speps/go-hashids"
 )
 
@@ -28,7 +29,7 @@ const (
 // Exporter configures and exposes PHP-FPM metrics to Prometheus.
 type Exporter struct {
 	mutex       sync.Mutex
-	PoolManager PoolManager
+	PoolManager *PoolManager
 
 	CountProcessState bool
 
@@ -53,7 +54,7 @@ type Exporter struct {
 }
 
 // NewExporter creates a new Exporter for a PoolManager and configures the necessary metrics.
-func NewExporter(pm PoolManager) *Exporter {
+func NewExporter(pm *PoolManager) *Exporter {
 	return &Exporter{
 		PoolManager: pm,
 

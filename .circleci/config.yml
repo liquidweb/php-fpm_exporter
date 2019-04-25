@@ -19,7 +19,7 @@ jobs:
       - run:
           name: Upload Code coverage
           command: |
-            sed -i 's#github.com/hipages/php-fpm_exporter/##' .cover/cover.out
+            sed -i 's#github.com/liquidweb/php-fpm_exporter/##' .cover/cover.out
             ./cc-test-reporter format-coverage -t gocov .cover/cover.out
             ./cc-test-reporter upload-coverage
 

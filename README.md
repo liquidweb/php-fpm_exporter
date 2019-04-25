@@ -1,8 +1,8 @@
 # php-fpm_exporter
 
 [![CircleCI](https://circleci.com/gh/hipages/php-fpm_exporter.svg?style=shield)](https://circleci.com/gh/hipages/php-fpm_exporter)
-[![Go Report Card](https://goreportcard.com/badge/github.com/hipages/php-fpm_exporter)](https://goreportcard.com/report/github.com/hipages/php-fpm_exporter)
-[![GoDoc](https://godoc.org/github.com/hipages/php-fpm_exporter?status.svg)](https://godoc.org/github.com/hipages/php-fpm_exporter)
+[![Go Report Card](https://goreportcard.com/badge/github.com/liquidweb/php-fpm_exporter)](https://goreportcard.com/report/github.com/liquidweb/php-fpm_exporter)
+[![GoDoc](https://godoc.org/github.com/liquidweb/php-fpm_exporter?status.svg)](https://godoc.org/github.com/liquidweb/php-fpm_exporter)
 [![Maintainability](https://api.codeclimate.com/v1/badges/52f9e1f0388e8aa38bfe/maintainability)](https://codeclimate.com/github/hipages/php-fpm_exporter/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/52f9e1f0388e8aa38bfe/test_coverage)](https://codeclimate.com/github/hipages/php-fpm_exporter/test_coverage)
 [![Docker Pulls](https://img.shields.io/docker/pulls/hipages/php-fpm_exporter.svg)](https://hub.docker.com/r/hipages/php-fpm_exporter/)
@@ -27,7 +27,7 @@ A webserver such as NGINX or Apache is **NOT** needed!
 
 ## Usage
 
-`php-fpm_exporter` is released as [binary](https://github.com/hipages/php-fpm_exporter/releases) and [docker](https://hub.docker.com/r/hipages/php-fpm_exporter/) image.
+`php-fpm_exporter` is released as [binary](https://github.com/liquidweb/php-fpm_exporter/releases) and [docker](https://hub.docker.com/r/hipages/php-fpm_exporter/) image.
 It uses sensible defaults which usually avoids the need to use command parameters or environment variables.
 
 `php-fpm_exporter` supports 2 commands, `get` and `server`.
@@ -182,7 +182,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/all-contri
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore -->
-| [<img src="https://avatars3.githubusercontent.com/u/362174?v=4" width="100px;" alt="Enrico Stahn"/><br /><sub><b>Enrico Stahn</b></sub>](http://enricostahn.com)<br />[💬](#question-estahn "Answering Questions") [💻](https://github.com/hipages/php-fpm_exporter/commits?author=estahn "Code") [📖](https://github.com/hipages/php-fpm_exporter/commits?author=estahn "Documentation") [🚧](#maintenance-estahn "Maintenance") [⚠️](https://github.com/hipages/php-fpm_exporter/commits?author=estahn "Tests") | [<img src="https://avatars2.githubusercontent.com/u/120429?v=4" width="100px;" alt="Stanislav Antic"/><br /><sub><b>Stanislav Antic</b></sub>](https://github.com/XooR)<br />[💻](https://github.com/hipages/php-fpm_exporter/commits?author=XooR "Code") | [<img src="https://avatars1.githubusercontent.com/u/1568165?v=4" width="100px;" alt="herb"/><br /><sub><b>herb</b></sub>](http://herb123456.blogspot.com/)<br />[💻](https://github.com/hipages/php-fpm_exporter/commits?author=herb123456 "Code") | [<img src="https://avatars1.githubusercontent.com/u/182203?v=4" width="100px;" alt="Smoked Cheese"/><br /><sub><b>Smoked Cheese</b></sub>](https://github.com/Nyoroon)<br />[🐛](https://github.com/hipages/php-fpm_exporter/issues?q=author%3ANyoroon "Bug reports") [💻](https://github.com/hipages/php-fpm_exporter/commits?author=Nyoroon "Code") |
+| [<img src="https://avatars3.githubusercontent.com/u/362174?v=4" width="100px;" alt="Enrico Stahn"/><br /><sub><b>Enrico Stahn</b></sub>](http://enricostahn.com)<br />[💬](#question-estahn "Answering Questions") [💻](https://github.com/liquidweb/php-fpm_exporter/commits?author=estahn "Code") [📖](https://github.com/liquidweb/php-fpm_exporter/commits?author=estahn "Documentation") [🚧](#maintenance-estahn "Maintenance") [⚠️](https://github.com/liquidweb/php-fpm_exporter/commits?author=estahn "Tests") | [<img src="https://avatars2.githubusercontent.com/u/120429?v=4" width="100px;" alt="Stanislav Antic"/><br /><sub><b>Stanislav Antic</b></sub>](https://github.com/XooR)<br />[💻](https://github.com/liquidweb/php-fpm_exporter/commits?author=XooR "Code") | [<img src="https://avatars1.githubusercontent.com/u/1568165?v=4" width="100px;" alt="herb"/><br /><sub><b>herb</b></sub>](http://herb123456.blogspot.com/)<br />[💻](https://github.com/liquidweb/php-fpm_exporter/commits?author=herb123456 "Code") | [<img src="https://avatars1.githubusercontent.com/u/182203?v=4" width="100px;" alt="Smoked Cheese"/><br /><sub><b>Smoked Cheese</b></sub>](https://github.com/Nyoroon)<br />[🐛](https://github.com/liquidweb/php-fpm_exporter/issues?q=author%3ANyoroon "Bug reports") [💻](https://github.com/liquidweb/php-fpm_exporter/commits?author=Nyoroon "Code") |
 | :---: | :---: | :---: | :---: |
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
