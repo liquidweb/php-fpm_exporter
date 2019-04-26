@@ -16,6 +16,8 @@ package phpfpm
 
 import (
 	"context"
+	"io/ioutil"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -81,13 +83,22 @@ func (pm *PoolManager) WatchDir(ctx context.Context, dir string) {
 			}
 		}
 	}()
-}
 
-// if event.Op&fsnotify.Create == fsnotify.Create {
-// 	pm.Add(uri)
-// } else if event.Op&fsnotify.Remove == fsnotify.Remove {
-// 	pm.Remove(uri)
-// }
+	files, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, rel := range files {
+		file, err := filepath.Abs(filepath.Join(dir, rel.Name()))
+		if err != nil {
+			log.Fatal(err)
+		}
+		uri := "unix://" + file + ";/status"
+
+		pm.Add(uri)
+	}
+}
 
 // Update will run the pool.Update() method concurrently on all Pools.
 func (pm *PoolManager) Update() (err error) {
