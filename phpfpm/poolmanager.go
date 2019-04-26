@@ -16,12 +16,11 @@ package phpfpm
 
 import (
 	"context"
-	"path/filepath"
 	"sync"
 	"time"
 
-	"github.com/fsnotify/fsnotify"
-	"github.com/prometheus/common/log"
+	"github.com/rjeczalik/notify"
+	log "github.com/sirupsen/logrus"
 )
 
 // PoolManager manages all configured Pools
@@ -55,47 +54,40 @@ func (pm *PoolManager) Remove(uri string) {
 
 func (pm *PoolManager) WatchDir(ctx context.Context, dir string) {
 	go func() {
-		watcher, err := fsnotify.NewWatcher()
-		if err != nil {
+		// Make the channel buffered to ensure no event is dropped. Notify will drop
+		// an event if the receiver is not able to keep up the sending pace.
+		c := make(chan notify.EventInfo, 10)
+
+		// Set up a watchpoint listening on events within current working directory.
+		// Dispatch each create and remove events separately to c.
+		if err := notify.Watch(dir, c, notify.Create, notify.Remove); err != nil {
 			log.Fatal(err)
 		}
-		defer watcher.Close()
+		defer notify.Stop(c)
 
-		log.Info("Watching for changes in ", dir)
-		err = watcher.Add(dir)
-		if err != nil {
-			log.Fatal(err)
-		}
-
+		// Block until an event is received.
 		for {
 			select {
-			case event, ok := <-watcher.Events:
-				if !ok {
-					return
-				}
-				log.Debugf("FS event: %v#", event)
-				filename, err := filepath.Abs(event.Name)
-				if err != nil {
-					log.Errorf("Could not convert %v to an absolute path: %v", event.Name, err)
-					return
-				}
-				uri := "unix://" + filename + ";/status"
-				if event.Op&fsnotify.Create == fsnotify.Create {
+			case ev := <-c:
+				log.Debugf("Got event: %#v", ev)
+				uri := "unix://" + ev.Path() + ";/status"
+				if ev.Event() == notify.Create {
 					pm.Add(uri)
-				} else if event.Op&fsnotify.Remove == fsnotify.Remove {
+				} else if ev.Event() == notify.Remove {
 					pm.Remove(uri)
 				}
-			case err, ok := <-watcher.Errors:
-				if !ok {
-					return
-				}
-				log.Errorf("dir watcher error: %v", err)
 			case <-ctx.Done():
 				return
 			}
 		}
 	}()
 }
+
+// if event.Op&fsnotify.Create == fsnotify.Create {
+// 	pm.Add(uri)
+// } else if event.Op&fsnotify.Remove == fsnotify.Remove {
+// 	pm.Remove(uri)
+// }
 
 // Update will run the pool.Update() method concurrently on all Pools.
 func (pm *PoolManager) Update() (err error) {
