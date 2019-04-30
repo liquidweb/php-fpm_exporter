@@ -132,3 +132,11 @@ func TestParseURL(t *testing.T) {
 		assert.Equal(t, u.out, []string{scheme, address, path})
 	}
 }
+
+func TestMarshalJSON(t *testing.T) {
+	var rd requestDuration = 123
+	buf, err := rd.MarshalJSON()
+	assert.Nil(t, err)
+	assert.Equal(t, buf, []byte("123"))
+	t.Logf("%s", buf)
+}

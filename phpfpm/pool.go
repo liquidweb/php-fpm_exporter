@@ -226,7 +226,7 @@ func (t *timestamp) UnmarshalJSON(b []byte) error {
 // https://bugs.php.net/bug.php?id=62382
 // https://serverfault.com/questions/624977/huge-request-duration-value-for-a-particular-php-script
 func (rd *requestDuration) MarshalJSON() ([]byte, error) {
-	stamp := fmt.Sprint(rd)
+	stamp := fmt.Sprint(*rd)
 	return []byte(stamp), nil
 }
 
