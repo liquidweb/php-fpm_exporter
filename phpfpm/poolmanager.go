@@ -17,7 +17,9 @@ package phpfpm
 import (
 	"context"
 	"io/ioutil"
+	"path"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -40,7 +42,7 @@ func (pm *PoolManager) Add(uri string) *Pool {
 		pm.Pools = make(map[string]*Pool)
 	}
 
-	p := &Pool{Address: uri}
+	p := &Pool{Address: uri, Name: shortenUri(uri)}
 	log.Infof("Adding pool %v", uri)
 	pm.Pools[uri] = p
 	return p
@@ -123,4 +125,11 @@ func (pm *PoolManager) Update() (err error) {
 	log.Debugf("Updated %v pool(s) in %v", len(pm.Pools), ended.Sub(started))
 
 	return nil
+}
+
+func shortenUri(s string) string {
+	s = strings.TrimPrefix(s, "unix:///")
+	s = strings.TrimSuffix(s, ";/status")
+	s = path.Base(s)
+	return s
 }
